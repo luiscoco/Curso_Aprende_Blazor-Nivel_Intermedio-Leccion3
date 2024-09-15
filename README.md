@@ -86,6 +86,7 @@ else
         public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
     }
 }
+```
 
 9. Modificar el Middleware(archivo Program.cs) en el proyecto Web API Project.
    Incluimos el puerto de la aplicación WebAssembly para configurar el CORS
