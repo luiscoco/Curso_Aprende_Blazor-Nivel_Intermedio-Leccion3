@@ -32,9 +32,60 @@ dotnet new sln -o BlazingPizza
 Microsoft.AspNetCore.Components.WebAssembly.Server
 ```
 
-8. Incluir la dirección de la aplicación Web API para invocarla desde la página weatherforecast de la aplicación Cliente WebAssembly
+8. Incluir la dirección de la aplicación Web API para invocarla desde el componente weatherforecast de la aplicación Cliente WebAssembly:
 
-https://localhost:7268/weatherforecast
+Pages/Weather.razor
+
+```razor
+@page "/weather"
+@inject HttpClient Http
+
+<PageTitle>Weather</PageTitle>
+<h1>Weather</h1>
+<p>This component demonstrates fetching data from the server.</p>
+
+@if (forecasts == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Temp. (C)</th>
+                <th>Temp. (F)</th>
+                <th>Summary</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var forecast in forecasts)
+            {
+                <tr>
+                    <td>@forecast.Date.ToShortDateString()</td>
+                    <td>@forecast.TemperatureC</td>
+                    <td>@forecast.TemperatureF</td>
+                    <td>@forecast.Summary</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+@code {
+    private WeatherForecast[]? forecasts;
+    protected override async Task OnInitializedAsync()
+    {
+        forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("https://localhost:7142/weatherforecast");
+    }
+    public class WeatherForecast
+    {
+        public DateOnly Date { get; set; }
+        public int TemperatureC { get; set; }
+        public string? Summary { get; set; }ç
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+}
 
 9. Modificar el Middleware(archivo Program.cs) en el proyecto Web API Project.
    Incluimos el puerto de la aplicación WebAssembly para configurar el CORS
